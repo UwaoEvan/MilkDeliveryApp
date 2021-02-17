@@ -13,33 +13,43 @@ export default function Details({ route, navigation }) {
         setShop(item);
     }, []);
 
-    const addItems = (product) => {
+    const addItems = (action, product) => {
         const addedProduct = cartItems.filter(p => p.name === product.name);
+        if (action == '+') {
+            if (addedProduct[0]) {
+                let newQty = addedProduct[0].qty + 1;
+                addedProduct[0].qty = newQty;
+                addedProduct[0].price = product.price;
+                addedProduct[0].total = addedProduct[0].qty * product.price;
 
-        if (addedProduct[0]) {
-            let newQty = addedProduct[0].qty + 1;
-            addedProduct[0].qty = newQty;
-            addedProduct[0].price = product.price;
-            addedProduct[0].total = addedProduct[0].qty * product.price;
+            } else {
+                let newItem = {
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    total: product.price,
+                    qty: 1
+                }
 
-        } else {
-            let newItem = {
-                id: product.id,
-                name: product.name,
-                price: product.price,
-                total: product.price,
-                qty: 1
+                setCartItems([...cartItems, newItem]);
             }
-
-            setCartItems([...cartItems, newItem]);
+        } else {
+            if (addedProduct[0]) {
+                let newQty = addedProduct[0].qty - 1;
+                addedProduct[0].qty = newQty;
+                addedProduct[0].price = product.price;
+                addedProduct[0].total = addedProduct[0].qty * product.price;
+            } else {
+                return null;
+            }
         }
-
     }
 
     const getQty = (id) => {
         const selected = cartItems.filter(c => c.id === id);
 
         if (selected[0]) {
+
             return selected[0].qty;
         } else {
             return 0
@@ -47,19 +57,13 @@ export default function Details({ route, navigation }) {
     }
 
     const getItems = () => {
-        if (cartItems.length > 0) {
-            return cartItems.length;
-        } else {
-            return 0
-        }
+        let orderItems = cartItems.reduce((a, b) => a + (b.qty || 0), 0);
+        return orderItems;
     }
 
     const getTotal = () => {
-        if (cartItems.length > 0) {
-            return cartItems[0].total
-        } else {
-            return 0
-        }
+        let totalCost = cartItems.reduce((a, b) => a + (b.total || 0), 0);
+        return totalCost;
     }
     return (
         <View style={styles.container}>
@@ -101,6 +105,7 @@ export default function Details({ route, navigation }) {
 
                         <TouchableOpacity
                             style={{ paddingLeft: 10 }}
+                            onPress={() => addItems('-', shop)}
                         >
                             <Feather
                                 name="minus"
@@ -117,12 +122,12 @@ export default function Details({ route, navigation }) {
 
                         <TouchableOpacity
                             style={{ paddingRight: 10 }}
+                            onPress={() => addItems('+', shop)}
                         >
                             <Feather
                                 name="plus"
                                 size={14}
                                 color="black"
-                                onPress={() => addItems(shop)}
                             />
                         </TouchableOpacity>
                     </View>
