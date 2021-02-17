@@ -1,21 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
 
 import CustomButton from '../components/CustomButton';
 
 export default function Details({ route, navigation }) {
-    const { item } = route.params;
+    const [shop, setShop] = useState(null);
     const [cartItems, setCartItems] = useState([]);
 
-    const addItems = (name, price) => {
+    useEffect(() => {
+        const { item } = route.params;
+        setShop(item);
+    }, []);
 
+    const addItems = (product) => {
+        const addedProduct = cartItems.filter(p => p.name === product.name);
+
+        if (addedProduct[0]) {
+            let newQty = addedProduct[0].qty + 1;
+            addedProduct[0].qty = newQty;
+            addedProduct[0].price = product.price;
+            addedProduct[0].total = addedProduct[0].qty * product.price;
+
+        } else {
+            let newItem = {
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                total: product.price,
+                qty: 1
+            }
+
+            setCartItems([...cartItems, newItem]);
+        }
 
     }
 
-    const getQty = (name) => {
-        const selected = cartItems.filter(c => c.name === name);
-        if (selected.length > 0) {
+    const getQty = (id) => {
+        const selected = cartItems.filter(c => c.id === id);
+
+        if (selected[0]) {
             return selected[0].qty;
         } else {
             return 0
@@ -52,7 +76,7 @@ export default function Details({ route, navigation }) {
                             onPress={() => navigation.navigate('Home')}
                         />
                         <View style={styles.location}>
-                            <Text style={{ fontFamily: 'Nunito-Bold' }}>{item.name}</Text>
+                            <Text style={{ fontFamily: 'Nunito-Bold' }}>{shop?.name}</Text>
                         </View>
                         <Ionicons
                             name="list"
@@ -65,7 +89,7 @@ export default function Details({ route, navigation }) {
                 {/* Body */}
 
                 <Image
-                    source={item.image}
+                    source={shop?.image}
                     resizeMode='stretch'
                     style={styles.image}
                 />
@@ -87,7 +111,7 @@ export default function Details({ route, navigation }) {
 
                         {/* Price */}
 
-                        <Text style={{ fontFamily: 'Nunito-Bold', fontSize: 20 }}>{getQty(item.name)}</Text>
+                        <Text style={{ fontFamily: 'Nunito-Bold', fontSize: 20 }}>{getQty(shop?.id)}</Text>
 
                         {/* Plus */}
 
@@ -98,7 +122,7 @@ export default function Details({ route, navigation }) {
                                 name="plus"
                                 size={14}
                                 color="black"
-                                onPress={() => addItems(item.name, item.price)}
+                                onPress={() => addItems(shop)}
                             />
                         </TouchableOpacity>
                     </View>
@@ -106,11 +130,11 @@ export default function Details({ route, navigation }) {
 
                 {/* Product Title and Price */}
 
-                <Text style={styles.productTitle}>{item.name} - Ksh {item.price.toFixed(2)}</Text>
+                <Text style={styles.productTitle}>{shop?.name} - Ksh {shop?.price.toFixed(2)}</Text>
 
                 {/* Product Description */}
                 <ScrollView>
-                    <Text style={styles.description}>{item.description}</Text>
+                    <Text style={styles.description}>{shop?.description}</Text>
                 </ScrollView>
             </View>
             <View style={styles.bottomBanner}>
