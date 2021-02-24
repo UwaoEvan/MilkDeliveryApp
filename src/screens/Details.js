@@ -22,6 +22,8 @@ export default function Details({ route, navigation }) {
                 addedProduct[0].price = product.price;
                 addedProduct[0].total = addedProduct[0].qty * product.price;
 
+                setCartItems([...cartItems]);
+
             } else {
                 let newItem = {
                     id: product.id,
@@ -39,6 +41,8 @@ export default function Details({ route, navigation }) {
                 addedProduct[0].qty = newQty;
                 addedProduct[0].price = product.price;
                 addedProduct[0].total = addedProduct[0].qty * product.price;
+
+                setCartItems([...cartItems]);
             } else {
                 return null;
             }
