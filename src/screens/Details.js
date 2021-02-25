@@ -49,7 +49,7 @@ export default function Details({ route, navigation }) {
         }
     }
 
-    const getQty = (id) => {
+    const getQty = id => {
         const selected = cartItems.filter(c => c.id === id);
 
         if (selected[0]) {
