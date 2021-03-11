@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons, Feather } from '@expo/vector-icons';
+import Amplify from 'aws-amplify';
+import config from '../aws-exports';
+import { Authenticator, ForgotPassword } from 'aws-amplify-react-native'
 
 import CustomButton from '../components/CustomButton';
+import SignIn from '../components/SignIn';
+import SignUp from '../components/SignUp';
+import ConfirmSignUp from '../components/ConfirmSignUp';
 
+Amplify.configure(config);
 export default function Details({ route, navigation }) {
     const [shop, setShop] = useState(null);
     const [cartItems, setCartItems] = useState([]);
@@ -69,112 +76,132 @@ export default function Details({ route, navigation }) {
         let totalCost = cartItems.reduce((a, b) => a + (b.total || 0), 0);
         return totalCost;
     }
+
+    const Content = (props) => {
+        if (props.authState === 'signedIn') {
+            return (
+                <View style={styles.container}>
+                    <View style={styles.topBanner}>
+
+                        {/* Header Icons */}
+
+                        <View style={styles.headerIconsContainer}>
+                            <View style={styles.headerIcons}>
+                                <Ionicons
+                                    name="arrow-back"
+                                    size={24}
+                                    color="black"
+                                    onPress={() => navigation.navigate('Home')}
+                                />
+                                <View style={styles.location}>
+                                    <Text style={{ fontFamily: 'Nunito-Bold' }}>{shop?.name}</Text>
+                                </View>
+                                <Ionicons
+                                    name="list"
+                                    size={24}
+                                    color="black"
+                                />
+                            </View>
+                        </View>
+
+                        {/* Body */}
+
+                        <Image
+                            source={shop?.image}
+                            resizeMode='stretch'
+                            style={styles.image}
+                        />
+
+                        <View style={styles.cartContainer}>
+                            <View style={styles.cart}>
+
+                                {/* Minus */}
+
+                                <TouchableOpacity
+                                    style={{ paddingLeft: 10 }}
+                                    onPress={() => addItems('-', shop)}
+                                >
+                                    <Feather
+                                        name="minus"
+                                        size={14}
+                                        color="black"
+                                    />
+                                </TouchableOpacity>
+
+                                {/* Price */}
+
+                                <Text style={{ fontFamily: 'Nunito-Bold', fontSize: 20 }}>{getQty(shop?.id)}</Text>
+
+                                {/* Plus */}
+
+                                <TouchableOpacity
+                                    style={{ paddingRight: 10 }}
+                                    onPress={() => addItems('+', shop)}
+                                >
+                                    <Feather
+                                        name="plus"
+                                        size={14}
+                                        color="black"
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
+                        {/* Product Title and Price */}
+
+                        <Text style={styles.productTitle}>{shop?.name} - Ksh {shop?.price.toFixed(2)}</Text>
+
+                        {/* Product Description */}
+                        <ScrollView>
+                            <Text style={styles.description}>{shop?.description}</Text>
+                        </ScrollView>
+                    </View>
+                    <View style={styles.bottomBanner}>
+                        <View style={{ marginHorizontal: 20 }}>
+                            <View style={styles.cartDetails}>
+                                <Text style={{ fontFamily: 'Nunito-Bold', fontSize: 16 }}>{getItems()} items in Cart</Text>
+                                <Text style={{ fontFamily: 'Nunito-Bold', fontSize: 16 }}>Ksh {getTotal()}</Text>
+                            </View>
+                            <View
+                                style={{
+                                    borderWidth: 0.5,
+                                    borderColor: '#ccc'
+                                }}
+                            />
+                            <View style={styles.landmark}>
+                                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <Ionicons
+                                        name="location-sharp"
+                                        size={12}
+                                        color="gray"
+                                    />
+                                    <Text style={styles.landmarkText}>Dembwa</Text>
+                                </View>
+                            </View>
+                            <CustomButton
+                                navigation={navigation}
+                                title='Order'
+                            />
+                        </View>
+                    </View>
+                </View>
+            )
+        } else {
+            return null;
+        }
+    }
     return (
-        <View style={styles.container}>
-            <View style={styles.topBanner}>
-
-                {/* Header Icons */}
-
-                <View style={styles.headerIconsContainer}>
-                    <View style={styles.headerIcons}>
-                        <Ionicons
-                            name="arrow-back"
-                            size={24}
-                            color="black"
-                            onPress={() => navigation.navigate('Home')}
-                        />
-                        <View style={styles.location}>
-                            <Text style={{ fontFamily: 'Nunito-Bold' }}>{shop?.name}</Text>
-                        </View>
-                        <Ionicons
-                            name="list"
-                            size={24}
-                            color="black"
-                        />
-                    </View>
-                </View>
-
-                {/* Body */}
-
-                <Image
-                    source={shop?.image}
-                    resizeMode='stretch'
-                    style={styles.image}
-                />
-
-                <View style={styles.cartContainer}>
-                    <View style={styles.cart}>
-
-                        {/* Minus */}
-
-                        <TouchableOpacity
-                            style={{ paddingLeft: 10 }}
-                            onPress={() => addItems('-', shop)}
-                        >
-                            <Feather
-                                name="minus"
-                                size={14}
-                                color="black"
-                            />
-                        </TouchableOpacity>
-
-                        {/* Price */}
-
-                        <Text style={{ fontFamily: 'Nunito-Bold', fontSize: 20 }}>{getQty(shop?.id)}</Text>
-
-                        {/* Plus */}
-
-                        <TouchableOpacity
-                            style={{ paddingRight: 10 }}
-                            onPress={() => addItems('+', shop)}
-                        >
-                            <Feather
-                                name="plus"
-                                size={14}
-                                color="black"
-                            />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
-                {/* Product Title and Price */}
-
-                <Text style={styles.productTitle}>{shop?.name} - Ksh {shop?.price.toFixed(2)}</Text>
-
-                {/* Product Description */}
-                <ScrollView>
-                    <Text style={styles.description}>{shop?.description}</Text>
-                </ScrollView>
-            </View>
-            <View style={styles.bottomBanner}>
-                <View style={{ marginHorizontal: 20 }}>
-                    <View style={styles.cartDetails}>
-                        <Text style={{ fontFamily: 'Nunito-Bold', fontSize: 16 }}>{getItems()} items in Cart</Text>
-                        <Text style={{ fontFamily: 'Nunito-Bold', fontSize: 16 }}>Ksh {getTotal()}</Text>
-                    </View>
-                    <View
-                        style={{
-                            borderWidth: 0.5,
-                            borderColor: '#ccc'
-                        }}
-                    />
-                    <View style={styles.landmark}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                            <Ionicons
-                                name="location-sharp"
-                                size={12}
-                                color="gray"
-                            />
-                            <Text style={styles.landmarkText}>Dembwa</Text>
-                        </View>
-                    </View>
-                    <CustomButton
-                        navigation={navigation}
-                        title='Order'
-                    />
-                </View>
-            </View>
-        </View>
+        <Authenticator
+            usernameAttributes="email"
+            hideDefault={true}
+            authState='signIn'
+            onStateChange={(authState) => console.log(authState)}
+        >
+            <Content />
+            <SignIn />
+            <SignUp />
+            <ConfirmSignUp />
+        </Authenticator>
     )
 }
 

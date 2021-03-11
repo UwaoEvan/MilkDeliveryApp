@@ -4,6 +4,7 @@ import * as Font from 'expo-font';
 
 import MainNavigation from './src/navigation/MainNavigation';
 
+
 const getFonts = () => Font.loadAsync({
   'Nunito-Regular': require('./assets/fonts/Nunito-Regular.ttf'),
   'Nunito-Bold': require('./assets/fonts/Nunito-Bold.ttf')
@@ -26,3 +27,5 @@ export default function App() {
     )
   }
 }
+
+

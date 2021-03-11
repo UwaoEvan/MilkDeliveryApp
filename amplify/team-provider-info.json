@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-dairy-dev-130527-authRole",
+      "UnauthRoleArn": "arn:aws:iam::442099540654:role/amplify-dairy-dev-130527-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::442099540654:role/amplify-dairy-dev-130527-authRole",
+      "Region": "ap-south-1",
+      "DeploymentBucketName": "amplify-dairy-dev-130527-deployment",
+      "UnauthRoleName": "amplify-dairy-dev-130527-unauthRole",
+      "StackName": "amplify-dairy-dev-130527",
+      "StackId": "arn:aws:cloudformation:ap-south-1:442099540654:stack/amplify-dairy-dev-130527/274b1720-8188-11eb-bb52-064e650717de",
+      "AmplifyAppId": "d3cyxknx6sped0"
+    },
+    "categories": {
+      "auth": {
+        "dairyff05b860": {}
+      }
+    }
+  }
+}
